@@ -1,0 +1,6 @@
+# GitHub Pages(Jekyll) 빌드 설정.
+# 저장소 문서가 kimjungeun.com 에 페이지로 공개되지 않게 제외한다.
+exclude:
+  - CLAUDE.md
+  - AGENTS.md
+  - README.md
