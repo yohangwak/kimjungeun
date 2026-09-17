@@ -1,12 +1,13 @@
 # kimjungeun
 
-`kimjungeun.com` 의 「홈페이지 준비 중」 안내 페이지. 빌드 도구·의존성·테스트 없는 정적 HTML 한 장이다.
+`kimjungeun.com` 의 「홈페이지 준비 중」 안내 페이지. 빌드 도구·의존성·테스트 없는 정적 HTML 페이지(`index.html`·`404.html`)다.
 
 ## 구조
 
 | 파일 | 역할 |
 |---|---|
-| `index.html` | 페이지 전부. CSS 는 인라인, 파비콘은 data URI — 외부 요청 0 |
+| `index.html` | 안내 페이지. CSS 는 인라인, 파비콘은 data URI — 외부 요청 0. 링크 미리보기용 Open Graph·canonical 메타 포함 |
+| `404.html` | 없는 주소에 GitHub Pages 가 404 상태로 내주는 페이지. `index.html` 스타일을 **복사**해 둔다(한쪽을 바꾸면 같이) |
 | `CNAME` | GitHub Pages 커스텀 도메인(`kimjungeun.com`). **지우면 도메인이 풀린다** |
 | `_config.yml` | GitHub Pages(Jekyll) 빌드 설정. 사이트에 올리지 않을 파일 목록 |
 | `.gitignore` | `*.png` — 이미지 자산을 커밋하려면 `git add -f` |
@@ -33,12 +34,13 @@ shot http://localhost:8000/ "$TMPDIR/kje-375.png" 375
 shot http://localhost:8000/ "$TMPDIR/kje-1440.png" 1440
 
 # 머지 후 라이브 확인
-curl -sS -o /dev/null -w '%{http_code}\n' https://kimjungeun.com/   # 200 이어야 한다
+curl -sS -o /dev/null -w '%{http_code}\n' https://kimjungeun.com/            # 200 이어야 한다
+curl -sS -o /dev/null -w '%{http_code}\n' https://kimjungeun.com/CLAUDE.html # 404 이어야 한다(문서 비공개)
 ```
 
 ## 주의
 
-- 페이지 문구의 이메일 주소는 `<meta name="description">` 에도 같이 들어 있다. 바꿀 땐 두 곳 다.
+- 이메일 주소·소개 문구는 여러 곳에 중복돼 있다 — `index.html` 본문·`<meta name="description">`·`og:description`, 그리고 `404.html` 본문. 바꿀 땐 모두.
 - `env(safe-area-inset-*)` 에는 대체값을 반드시 준다 — 없으면 미지원 환경에서 선언 전체가 무효가 된다
   (`index.html` 주석 참고).
 - 외부 폰트·스크립트·분석 태그를 넣으면 「외부 요청 0」이 깨진다. 넣을 땐 의도적으로.
