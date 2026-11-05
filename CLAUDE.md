@@ -10,14 +10,17 @@
 | `404.html` | 없는 주소에 GitHub Pages 가 404 상태로 내주는 페이지. `index.html` 스타일을 **복사**해 둔다(한쪽을 바꾸면 같이) |
 | `CNAME` | GitHub Pages 커스텀 도메인(`kimjungeun.com`). **지우면 도메인이 풀린다** |
 | `_config.yml` | GitHub Pages(Jekyll) 빌드 설정. 사이트에 올리지 않을 파일 목록 |
+| `BACKLOG.md` | 점검에서 찾은 남은 일·요한님 결정 대기 목록. `_config.yml` exclude 로 사이트 비공개 |
 | `.gitignore` | `*.png` — 이미지 자산을 커밋하려면 `git add -f` |
-| `.github/workflows/pullfrog.yml` | 수동 실행 AI 에이전트 워크플로. 손대지 않는다 |
+| `.github/workflows/pullfrog.yml` | Pullfrog 앱이 PR 이 열리면 `workflow_dispatch` 로 돌리는 AI 리뷰 워크플로(사람이 손으로 돌리는 것이 아니다). 2026-11-06 실측 GitHub 상태 `disabled_manually` — 확인 명령은 아래 「확인 방법」. 손대지 않는다 |
 
 ## 배포 — `main` push = 라이브
 
 GitHub Pages 가 `main` 브랜치 루트를 **Jekyll 로 빌드**해 `https://kimjungeun.com/` 에 올린다
 (별도 CI·배포 스크립트 없음). 머지하면 몇 분 안에 반영되고, 응답이 `Cache-Control: max-age=600`
 이라 브라우저·CDN 에 최대 10분 옛 페이지가 남을 수 있다.
+
+`www.kimjungeun.com` 은 DNS 레코드가 없다(2026-11-06 실측 NXDOMAIN — Pages `cname`·인증서도 apex `kimjungeun.com` 하나). www 접속 불가는 장애가 아니라 현재 설정이며, 바꾸려면 Cloudflare DNS 변경이라 요한님 결정이다.
 
 ⚠️ **Jekyll 이 돌기 때문에 루트에 둔 `.md` 파일도 페이지로 변환돼 공개된다**
 (GitHub Pages 는 front matter 없는 마크다운도 변환한다). 사이트에 나가면 안 되는 문서를 새로
@@ -36,6 +39,11 @@ shot http://localhost:8000/ "$TMPDIR/kje-1440.png" 1440
 # 머지 후 라이브 확인
 curl -sS -o /dev/null -w '%{http_code}\n' https://kimjungeun.com/            # 200 이어야 한다
 curl -sS -o /dev/null -w '%{http_code}\n' https://kimjungeun.com/CLAUDE.html # 404 이어야 한다(문서 비공개)
+
+# www 는 DNS 레코드 없음(`status: NXDOMAIN` 이 현재 정상 — 대조군 apex 는 NOERROR)
+dig www.kimjungeun.com +noall +comments | grep -o 'status: [A-Z]*'
+# 워크플로 상태(pullfrog 은 disabled_manually 가 현재 정상)
+gh api repos/yohangwak/kimjungeun/actions/workflows --jq '.workflows[] | [.path, .state] | @tsv'
 ```
 
 ## 주의
